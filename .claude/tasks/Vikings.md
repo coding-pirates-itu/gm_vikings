@@ -19,10 +19,16 @@ few objects, short events, plain GML.
 | Stones | Kaj throws stones. They only push wall buttons (not plates), nothing else. |
 | Slime | Patrols left/right. Bumping into Bjorn's shield turns it around; any other touch kills. |
 | Size | 2 levels + win room. A level is won when **both** vikings stand in the exit. |
+| Proportions (correction) | A normal room (storey) is 1.5–2× Bjorn's height; Kaj jumps about 2.1× Bjorn's height. |
+| Camera (correction) | Follows the active viking; after `Tab` it glides (pans) to the other one. |
 
 ## Rules
 
 - Grid of 32×32 px cells for building levels, but vikings move pixel by pixel (walk, fall, climb).
+- Sizes: Bjorn is 48 px tall. A storey is 3 cells = 96 px (2× Bjorn), doors and the space above a ledge are 2 cells (1.3×).
+  Kaj's jump is 105 px (2.2× Bjorn) — enough for a 3-cell ledge. (With whole-pixel speeds the choices are 91 px = 1.9× or 105 px = 2.2×.)
+- Camera: shows 640×360 px of the room, zoomed 2× to a 1280×720 window, so the vikings look big.
+  `o_Game.MoveCamera()` moves it 10 % of the way to the active viking every step — this follows the viking and pans after `Tab`.
 - **Bjorn**: big, slow, can't jump, shield always in front.
 - **Kaj**: small, jumps, throws one stone at a time (flies in an arc).
 - **Button** (on a wall): a viking standing at it presses `E`, or a stone hits it → toggles its target.
@@ -82,7 +88,7 @@ few objects, short events, plain GML.
 
 | Object | Parent | Events | Purpose |
 |--------|--------|--------|---------|
-| `o_Game` | — | Create, Key press Tab, Key press R, Alarm 0, Draw GUI | who is active, restart, help text |
+| `o_Game` | — | Create, Room Start, Step, Key press Tab, Key press R, Alarm 0, Draw GUI | who is active, camera, restart, help text |
 | `o_Viking` | — | Create, Step, Key press E, Draw | walking, gravity, ladders, dangers, `Die()`, `IsProtectedFrom()` |
 | `o_Bjorn` | `o_Viking` | Create | slower, shield: overrides `IsProtectedFrom()` |
 | `o_Kaj` | `o_Viking` | Create, Key press Space, Key press F | jump, throw |
@@ -112,18 +118,18 @@ Stretched instances (scaled in the room editor): ladders and lasers (`Scale Y` =
 
 ### Rooms
 
-1280×704 (40×22 cells), one screen, no camera.
+1280×704 (40×22 cells). Viewport 0: camera 640×360, port 1280×720, moved by `o_Game` (no "Object following").
 
 | Room | Teaches |
 |------|---------|
-| `rm_Level1` | switching vikings, button → door, plate → ladder, stone → high button, arrows vs. shield |
+| `rm_Level1` | switching vikings, button → door, arrows vs. shield, stone → button behind spikes, Kaj's high jump, plate → ladder |
 | `rm_Level2` | trapdoors over spikes, lasers, slime vs. shield, everything together |
 | `rm_Win` | "You win!" |
 
 ## Lessons (1.5 hours each)
 
 1. Project, `s_Wall` / `o_Wall` (solid), room with 32×32 grid. `o_Viking` with gravity, walking and the "move pixel by pixel" loop.
-2. `o_Bjorn` and `o_Kaj` as children, `o_Game` switches with Tab, marker. Kaj jumps. Ladders (always down).
+2. `o_Bjorn` and `o_Kaj` as children, `o_Game` switches with Tab, marker, camera that follows (`MoveCamera`). Kaj jumps. Ladders (always down).
 3. Devices: `o_Door` with `Toggle()`, `o_Button` with `target`, then `o_Plate`. Ladder rolled up/down. Exit.
 4. Kaj throws stones that push buttons. Arrow holes, arrows, `Die()` and restart, Bjorn's shield (`IsProtectedFrom`).
 5. Trapdoors (child of door) and spikes, lasers, slime. Sounds. Second level, win room.
@@ -135,16 +141,15 @@ and converted to rooms by a script. From now on edit them in the room editor.
 Instance names must be unique in the whole project, so they start with the level: `l1_door_1`, `l2_laser_2`, …
 Pictures: `docs/level1.png`, `docs/level2.png`. Solutions are in the README.
 
-Checked with a small calculation: Kaj's jump is 78 px (a 2-cell ledge is 64 px); the stone flies 72 px high and
-hits the level 1 button from cells 21–26 and the level 2 button from cells 13–17.
+Checked with a small calculation: Kaj's jump is 105 px (the ledge is 96 px). The stone (6, −5, gravity 0.25) stays under a
+3-cell ceiling and hits the level 1 button from cells 19–21 (behind Bjorn) and the level 2 button from cells 16–19.
 
 | Level 1 | Level 2 |
 |---------|---------|
-| `l1_button_door` → `l1_door_1` | `l2_button_door` → `l2_door_1` |
-| `l1_button_ladder` (stone) → `l1_ladder_1` (rolled up) | `l2_button_laser_1` → `l2_laser_1` |
-| `l1_plate_ladder` → `l1_ladder_2` (rolled up) | `l2_button_trapdoor` → `l2_trapdoor_1` (open) |
-| arrow hole shooting left | `l2_button_laser_2` (stone) → `l2_laser_2` |
-| | slime |
+| storey A: `l1_button_door` → `l1_door_1`, arrow hole | storey A: `l2_button_door` → `l2_door_1`, slime |
+| `l1_button_ladder` behind spikes (stone) → `l1_ladder_1` (rolled up) | `l2_button_laser_1` → `l2_laser_1` |
+| storey B: corridor, `l1_ladder_2` | storey B: `l2_button_trapdoor` → `l2_trapdoor_1` (open, over spikes), `l2_ladder_2` |
+| storey C: 3-cell ledge, `l1_plate_ladder` → `l1_ladder_3` (rolled up), exit | storey C: `l2_button_laser_2` behind the big laser (stone), exit |
 
 ## Progress
 
@@ -155,6 +160,7 @@ hits the level 1 button from cells 21–26 and the level 2 button from cells 13�
 - [x] Levels
 - [x] README with lessons and solutions
 - [x] Commit and push
+- [x] Correction: bigger vikings (storey = 2× Bjorn), Kaj jumps ~2× Bjorn, camera follows and pans
 - [ ] Open in GameMaker and play-test both levels (no GameMaker in the build environment)
 
 ## Notes
