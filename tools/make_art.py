@@ -35,7 +35,8 @@ EYE = (20, 20, 20, 255)
 
 # ------------------------------------------------------------ walls
 def wall():
-    img = Image.new("RGBA", (32, 32), (52, 52, 64, 255))
+    # sandstone blocks
+    img = Image.new("RGBA", (32, 32), (150, 116, 74, 255))       # mortar
     d = ImageDraw.Draw(img)
     rnd = random.Random(5)
     for row in range(2):
@@ -43,22 +44,22 @@ def wall():
         off = 0 if row == 0 else -8
         for col in range(-1, 3):
             x0 = off + col * 16
-            g = rnd.choice([96, 104, 112])
-            rect(d, x0 + 1, y0 + 1, x0 + 14, y0 + 14, (g, g, g + 10, 255))
-            d.line([x0 + 1, y0 + 1, x0 + 14, y0 + 1], fill=(g + 40, g + 40, g + 50, 255))
-            d.line([x0 + 1, y0 + 1, x0 + 1, y0 + 14], fill=(g + 25, g + 25, g + 35, 255))
-            d.line([x0 + 1, y0 + 14, x0 + 14, y0 + 14], fill=(g - 30, g - 30, g - 20, 255))
-            for _ in range(3):
+            r, g, b = rnd.choice([(222, 190, 135), (212, 178, 122), (230, 200, 146)])
+            rect(d, x0 + 1, y0 + 1, x0 + 14, y0 + 14, (r, g, b, 255))
+            d.line([x0 + 1, y0 + 1, x0 + 14, y0 + 1], fill=(min(r + 22, 255), min(g + 22, 255), min(b + 22, 255), 255))
+            d.line([x0 + 1, y0 + 1, x0 + 1, y0 + 14], fill=(min(r + 12, 255), min(g + 12, 255), min(b + 12, 255), 255))
+            d.line([x0 + 1, y0 + 14, x0 + 14, y0 + 14], fill=(r - 45, g - 45, b - 45, 255))
+            for _ in range(4):
                 px, py = x0 + rnd.randrange(3, 13), y0 + rnd.randrange(3, 13)
                 if 0 <= px < 32:
-                    img.putpixel((px, py), (g - 20, g - 20, g - 10, 255))
+                    img.putpixel((px, py), (r - 25, g - 28, b - 30, 255))
     return img
 
 def arrow_hole():
     img = wall()
     d = ImageDraw.Draw(img)
-    rect(d, 6, 12, 31, 19, (20, 16, 18, 255))
-    rect(d, 6, 12, 31, 12, (10, 8, 10, 255))
+    rect(d, 6, 12, 31, 19, (40, 28, 20, 255))
+    rect(d, 6, 12, 31, 12, (20, 14, 10, 255))
     d.polygon([(20, 13), (28, 15), (28, 16), (20, 18)], fill=(60, 40, 30, 255))  # arrow tip waiting
     return img
 

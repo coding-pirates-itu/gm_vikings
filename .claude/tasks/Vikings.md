@@ -21,13 +21,15 @@ few objects, short events, plain GML.
 | Size | 2 levels + win room. A level is won when **both** vikings stand in the exit. |
 | Proportions (correction) | A normal room (storey) is 1.5–2× Bjorn's height; Kaj jumps about 2.1× Bjorn's height. |
 | Camera (correction) | Follows the active viking; after `Tab` it glides (pans) to the other one. |
+| Correction 2 | Even smaller levels; sandstone-coloured walls; the camera shows about 7 tiles vertically. |
 
 ## Rules
 
 - Grid of 32×32 px cells for building levels, but vikings move pixel by pixel (walk, fall, climb).
 - Sizes: Bjorn is 48 px tall. A storey is 3 cells = 96 px (2× Bjorn), doors and the space above a ledge are 2 cells (1.3×).
   Kaj's jump is 105 px (2.2× Bjorn) — enough for a 3-cell ledge. (With whole-pixel speeds the choices are 91 px = 1.9× or 105 px = 2.2×.)
-- Camera: shows 640×360 px of the room, zoomed 2× to a 1280×720 window, so the vikings look big.
+- Camera: shows 427×240 px of the room (7.5 tiles high), zoomed 3× to a 1280×720 window, so the vikings look big.
+  (Exactly 7 tiles would need a 3.2× zoom, which makes pixel art shimmer.)
   `o_Game.MoveCamera()` moves it 10 % of the way to the active viking every step — this follows the viking and pans after `Tab`.
 - **Bjorn**: big, slow, can't jump, shield always in front.
 - **Kaj**: small, jumps, throws one stone at a time (flies in an arc).
@@ -63,7 +65,7 @@ few objects, short events, plain GML.
 | `s_BjornIdle`, `s_BjornWalk`, `s_BjornClimb` | 40×48 | 2 / 4 / 2 | bottom centre |
 | `s_KajIdle`, `s_KajWalk`, `s_KajClimb`, `s_KajJump` | 32×36 | 2 / 4 / 2 / 1 | bottom centre |
 | `s_Stone` | 12×12 | 1 | centre |
-| `s_Wall` | 32×32 | 1 | top left |
+| `s_Wall` | 32×32 | 1 | top left — sandstone blocks |
 | `s_Button` | 32×32 | 2 (off / on) | top left |
 | `s_Plate` | 32×32 | 2 (up / down) | top left |
 | `s_Door` | 32×64 | 2 (closed / open) | top left |
@@ -118,7 +120,8 @@ Stretched instances (scaled in the room editor): ladders and lasers (`Scale Y` =
 
 ### Rooms
 
-1280×704 (40×22 cells). Viewport 0: camera 640×360, port 1280×720, moved by `o_Game` (no "Object following").
+Level 1: 22×15 cells (704×480), level 2: 20×15 cells (640×480) — three storeys packed on top of each other.
+Viewport 0: camera 427×240, port 1280×720, moved by `o_Game` (no "Object following"). Background: dark warm brown.
 
 | Room | Teaches |
 |------|---------|
@@ -142,7 +145,7 @@ Instance names must be unique in the whole project, so they start with the level
 Pictures: `docs/level1.png`, `docs/level2.png`. Solutions are in the README.
 
 Checked with a small calculation: Kaj's jump is 105 px (the ledge is 96 px). The stone (6, −5, gravity 0.25) stays under a
-3-cell ceiling and hits the level 1 button from cells 19–21 (behind Bjorn) and the level 2 button from cells 16–19.
+3-cell ceiling and hits the level 1 button from cells 7–9 (behind Bjorn at the ladder, cell 10) and the level 2 button from cells 6–9 (laser at cell 10).
 
 | Level 1 | Level 2 |
 |---------|---------|
@@ -161,6 +164,7 @@ Checked with a small calculation: Kaj's jump is 105 px (the ledge is 96 px). The
 - [x] README with lessons and solutions
 - [x] Commit and push
 - [x] Correction: bigger vikings (storey = 2× Bjorn), Kaj jumps ~2× Bjorn, camera follows and pans
+- [x] Correction 2: compact levels (22×15 and 20×15), sandstone walls, camera 7.5 tiles high
 - [ ] Open in GameMaker and play-test both levels (no GameMaker in the build environment)
 
 ## Notes
